@@ -5,6 +5,7 @@ import android.os.Bundle
 import android.support.design.widget.FloatingActionButton
 import android.support.design.widget.Snackbar
 import android.support.v7.app.AppCompatActivity
+import com.google.firebase.auth.FirebaseUser
 import android.support.v7.widget.Toolbar
 import android.view.Menu
 import android.view.MenuItem
@@ -22,10 +23,10 @@ class MainActivity : AppCompatActivity() {
         mToolbar = findViewById(R.id.toolbar)
         setSupportActionBar(mToolbar)
         val fab = findViewById<FloatingActionButton>(R.id.fab)
-        fab.setOnClickListener{
-            _ ->
+        fab.setOnClickListener{ v ->
             //ログイン済みのユーザーを取得する
             val user = FirebaseAuth.getInstance().currentUser
+
 
             //ログインしていなければログイン画面に遷移させる。
             if(user == null){

@@ -6,14 +6,13 @@ import android.os.Bundle
 import android.preference.PreferenceManager
 import android.support.design.widget.Snackbar
 import android.view.View
-import android.view.inputmethod.InputMethod
 import android.view.inputmethod.InputMethodManager
 import com.google.android.gms.tasks.OnCompleteListener
 import com.google.firebase.auth.AuthResult
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.database.*
 import kotlinx.android.synthetic.main.activity_login.*
-import java.util.jar.Attributes
+
 
 class LoginActivity : AppCompatActivity() {
 
@@ -77,17 +76,14 @@ class LoginActivity : AppCompatActivity() {
                             val data = snapshot.value as Map<*,*>?
                             saveName(data!!["name"] as String)
                         }
-
-                        override fun onCancelled(firebaseError: DatabaseError) {
-
-                        }
+                        override fun onCancelled(firebaseError: DatabaseError) {}
                     })
                 }
                 //プログレスバーを非表示にする
                 progressBar.visibility = View.GONE
-
                 //Activityを閉じる
                 finish()
+
             } else {
                 //失敗した場合はエラーを表示させたい！！
                 val view = findViewById<View>(android.R.id.content)
@@ -97,11 +93,12 @@ class LoginActivity : AppCompatActivity() {
                 progressBar.visibility = View.GONE
             }
         }
+
+
         //UI の準備
         title = "ログイン"
 
-        createButton.setOnClickListener{
-            v->
+        createButton.setOnClickListener{ v ->
             //キーボードが出てきたら閉じる
             val im = getSystemService(Context.INPUT_METHOD_SERVICE) as InputMethodManager
             im.hideSoftInputFromWindow(v.windowToken,InputMethodManager.HIDE_NOT_ALWAYS)
@@ -120,14 +117,15 @@ class LoginActivity : AppCompatActivity() {
                 Snackbar.make(v,"正しい入力してください。",Snackbar.LENGTH_LONG).show()
             }
         }
-        loginButton.setOnClickListener{v ->
+        loginButton.setOnClickListener{ v ->
             //キーボードが出てきたら閉じる
             val im = getSystemService(Context.INPUT_METHOD_SERVICE) as InputMethodManager
             im.hideSoftInputFromWindow(v.windowToken,InputMethodManager.HIDE_NOT_ALWAYS)
+
             val email = emailText.text.toString()
             val password = passwordText.text.toString()
 
-            if(email.length != 0 && password.length >= 6){
+            if(email.isNotEmpty() && password.length >= 6){
                 //フラグを落としておく
                 mIsCreateAccount = false
 
@@ -163,7 +161,7 @@ class LoginActivity : AppCompatActivity() {
         progressBar.visibility = View.VISIBLE
 
         //ログインする
-        mAuth.createUserWithEmailAndPassword(email,password).addOnCompleteListener(mLoginListener)
+        mAuth.signInWithEmailAndPassword(email,password).addOnCompleteListener(mLoginListener)
     }
 
     /**
