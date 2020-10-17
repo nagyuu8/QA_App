@@ -23,7 +23,7 @@ import kotlinx.android.synthetic.main.activity_main.*
 
 class MainActivity : AppCompatActivity(),NavigationView.OnNavigationItemSelectedListener {
 
-    val question:Question? = null
+//    val question:Question? = null
     private lateinit var mToolbar: Toolbar
     private var mGenre = 0
 

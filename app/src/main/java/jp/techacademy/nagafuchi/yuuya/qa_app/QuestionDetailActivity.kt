@@ -1,10 +1,13 @@
 package jp.techacademy.nagafuchi.yuuya.qa_app
 
+import android.content.Context
 import android.content.Intent
 import android.support.v7.app.AppCompatActivity
 import android.os.Bundle
+import android.util.Log
 import android.view.View
 import android.widget.Adapter
+import android.widget.Button
 import android.widget.ListView
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.database.*
@@ -68,7 +71,11 @@ class QuestionDetailActivity : AppCompatActivity() {
         //ListViewの準備
         mAdapter = QuestionDetailListAdapter(this, mQuestion)
         listView.adapter = mAdapter
+        if (FirebaseAuth.getInstance().currentUser != null){ ///Userがあれば、mAdapterのisLoginをtrueにする。
+            mAdapter.isLogin = true
+        }
         mAdapter.notifyDataSetChanged()
+
 
         fab.setOnClickListener {
             //ログイン済みユーザーを取得する

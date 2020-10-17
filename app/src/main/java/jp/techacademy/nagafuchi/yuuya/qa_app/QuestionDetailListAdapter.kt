@@ -8,6 +8,7 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.BaseAdapter
+import android.widget.Button
 import android.widget.ImageView
 import android.widget.TextView
 import org.w3c.dom.Text
@@ -22,6 +23,7 @@ class QuestionDetailListAdapter(context: Context,private val mQuestion: Question
     }
 
     private var mLayoutInflater: LayoutInflater? = null
+    var isLogin = false
 
     init {
         mLayoutInflater = context.getSystemService(Context.LAYOUT_INFLATER_SERVICE) as LayoutInflater
@@ -87,6 +89,12 @@ class QuestionDetailListAdapter(context: Context,private val mQuestion: Question
                 val imageView = convertView.findViewById<View>(R.id.imageView) as ImageView
                 imageView.setImageBitmap(image)
             }
+//            val favorite = TODO()
+            val favoriteButton = convertView.findViewById<Button>(R.id.favorite) as Button
+            if (isLogin){
+                favoriteButton.visibility = View.VISIBLE
+            }
+
         }else{
             if(convertView == null){
                 convertView = mLayoutInflater!!.inflate(R.layout.list_answer,parent,false)!!
