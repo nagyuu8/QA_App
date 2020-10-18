@@ -14,6 +14,7 @@ import android.support.v7.widget.Toolbar
 import android.util.Base64
 import android.view.Menu
 import android.view.MenuItem
+import android.view.View
 import android.widget.ListView
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.database.*
@@ -107,6 +108,14 @@ class MainActivity : AppCompatActivity(),NavigationView.OnNavigationItemSelected
         setContentView(R.layout.activity_main)
         mToolbar = findViewById(R.id.toolbar)
         setSupportActionBar(mToolbar)
+        nav_view.menu.setGroupVisible(R.id.group_login_menu,false)
+        //ログイン済みのユーザーを取得する
+        val user = FirebaseAuth.getInstance().currentUser
+        //ログインしていればお気に入りをナビゲーションドロワーに表示させる。
+        if(user != null){
+            nav_view.menu.setGroupVisible(R.id.group_login_menu,true)
+        }
+
 
         val fab = findViewById<FloatingActionButton>(R.id.fab)
         fab.setOnClickListener{ view ->
@@ -206,6 +215,10 @@ class MainActivity : AppCompatActivity(),NavigationView.OnNavigationItemSelected
             R.id.nav_computer ->{
                 mToolbar.title="コンピューター"
                 mGenre = 4
+            }
+            R.id.nav_favorite ->{
+                mToolbar.title="お気に入り"
+                mGenre = 5
             }
         }
 

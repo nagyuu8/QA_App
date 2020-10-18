@@ -26,14 +26,6 @@
         android:text="Small Text"
         android:layout_alignParentEnd="true"
         android:layout_alignParentBottom="true"/>
-    <Button
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:text="☆お気に入り"
-        android:id="@+id/favorite"
-        android:layout_below="@+id/imageView"
-        android:layout_alignParentLeft="true"
-        android:visibility="invisible"
-       />
+
 
 </RelativeLayout>

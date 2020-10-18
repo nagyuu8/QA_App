@@ -1,19 +1,17 @@
 package jp.techacademy.nagafuchi.yuuya.qa_app
 
-import android.content.Context
 import android.content.Intent
+import android.graphics.Color
 import android.support.v7.app.AppCompatActivity
 import android.os.Bundle
+import android.support.design.widget.Snackbar
 import android.util.Log
 import android.view.View
-import android.widget.Adapter
-import android.widget.Button
-import android.widget.ListView
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.database.*
 import kotlinx.android.synthetic.main.activity_question_detail.*
 
-class QuestionDetailActivity : AppCompatActivity() {
+class QuestionDetailActivity : AppCompatActivity(),DatabaseReference.CompletionListener {
     private lateinit var mQuestion: Question
     private lateinit var mAdapter: QuestionDetailListAdapter
     private lateinit var mAnswerRef: DatabaseReference
@@ -64,18 +62,66 @@ class QuestionDetailActivity : AppCompatActivity() {
 
         //わたってきたQuestionオブジェクトを保持
         val extras = intent.extras
-        mQuestion = extras.get("question") as Question
+        //データベースの追加
+        val user = FirebaseAuth.getInstance().currentUser
+        val dataBaseReference = FirebaseDatabase.getInstance().reference
 
+
+
+        mQuestion = extras.get("question") as Question
         title = mQuestion.title
 
         //ListViewの準備
         mAdapter = QuestionDetailListAdapter(this, mQuestion)
         listView.adapter = mAdapter
-        if (FirebaseAuth.getInstance().currentUser != null){ ///Userがあれば、mAdapterのisLoginをtrueにする。
-            mAdapter.isLogin = true
-        }
         mAdapter.notifyDataSetChanged()
+//ここから===================================================================================--
+        if (user != null) {
 
+
+            val favoriteRef = dataBaseReference
+                .child(FavoritesPath)
+                .child(user.toString())
+
+            val data = HashMap<String, String>()
+            //UID
+            data["uid"] = FirebaseAuth.getInstance().currentUser!!.uid
+
+            var mFavorite: String
+            if (data["favorite"] == null) {
+                mFavorite = "true"
+            } else {
+                mFavorite = data["favorite"]!!
+            }
+
+            if (mFavorite == "true") {
+                favoriteButton.hide()//お気に入りボタン（済）を消しておく。
+            } else {
+                favoriteButton2.hide()//お気に入りボタン（済）を消しておく。
+            }
+
+            if (user == null) {// もし、ログイン状態でなければ、お気に入りボタン（未）も隠す。
+                favoriteButton.hide()
+            }
+            favoriteButton.setOnClickListener {
+                //favoriteボタンが押されたら、登録をし、登録済みの画像へ変更する
+                favoriteButton.hide()
+                favoriteButton2.show()
+                mFavorite = "true"
+                favoriteRef.setValue(mFavorite)
+            }
+            favoriteButton2.setOnClickListener {
+                //お気に入り済みのボタンを再度おしたら、お気に入りを解除し、登録未登録へ戻す。
+                favoriteButton2.hide()
+                favoriteButton.show()
+                mFavorite = "false"
+                favoriteRef.setValue(mFavorite)
+            }
+        }else{
+            favoriteButton.hide()
+            favoriteButton2.hide()
+        }
+//ここまで =======================================================================================================================
 
         fab.setOnClickListener {
             //ログイン済みユーザーを取得する
@@ -90,9 +136,19 @@ class QuestionDetailActivity : AppCompatActivity() {
                 startActivity(intent)
             }
         }
-        val dataBaseReference = FirebaseDatabase.getInstance().reference
+
         mAnswerRef = dataBaseReference.child(ContentsPATH).child(mQuestion.genre.toString()).child(mQuestion.questionUid).child(
             AnswersPATH)
         mAnswerRef.addChildEventListener(mEventListener)
+    }
+    override fun onComplete(databaseError: DatabaseError?, databaseReference: DatabaseReference) {
+
+
+        if (databaseError == null) {
+            finish()
+        } else {
+            Snackbar.make(findViewById(android.R.id.content), "投稿に失敗しました。", Snackbar.LENGTH_LONG)
+                .show()
+        }
     }
 }

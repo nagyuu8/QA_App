@@ -13,5 +13,13 @@
          <item
              android:id="@+id/nav_computer"
              android:title="コンピューター" />
+
+
+
+    </group>
+    <group android:id ="@+id/group_login_menu">
+        <item
+            android:id="@+id/nav_favorite"
+            android:title="お気に入り" />
     </group>
 </menu>
