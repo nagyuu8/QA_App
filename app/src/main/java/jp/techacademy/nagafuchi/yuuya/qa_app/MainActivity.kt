@@ -34,7 +34,6 @@ class MainActivity : AppCompatActivity(),NavigationView.OnNavigationItemSelected
     private lateinit var mAdapter: QuestionsListAdapter
 
     private var mGenreRef: DatabaseReference? = null
-
     private val mEventListener = object :ChildEventListener{
         override fun onChildAdded(dataSnapshot: DataSnapshot, s: String?) {
             val map = dataSnapshot.value as Map<String,String>
@@ -234,6 +233,7 @@ class MainActivity : AppCompatActivity(),NavigationView.OnNavigationItemSelected
         if(mGenreRef != null){
             mGenreRef!!.removeEventListener(mEventListener)
         }
+
         mGenreRef = mDatabaseReference.child(ContentsPATH).child(mGenre.toString())
         mGenreRef!!.addChildEventListener(mEventListener)
 

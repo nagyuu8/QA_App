@@ -4,6 +4,7 @@ import android.content.Intent
 import android.graphics.Color
 import android.support.v7.app.AppCompatActivity
 import android.os.Bundle
+import android.preference.PreferenceManager
 import android.support.design.widget.Snackbar
 import android.util.Log
 import android.view.View
@@ -76,51 +77,58 @@ class QuestionDetailActivity : AppCompatActivity(),DatabaseReference.CompletionL
         listView.adapter = mAdapter
         mAdapter.notifyDataSetChanged()
 //ここから===================================================================================--
+        var mFavorite: String = "null"
+        val data  = HashMap<String,String>()
+
+        //TODO お気に入りのFirebaseへの登録作業（いまは　user - true or falseしか登録できない）
         if (user != null) {
-
-
             val favoriteRef = dataBaseReference
                 .child(FavoritesPath)
-                .child(user.toString())
+                .child(user.uid)
+                .child(mQuestion.questionUid)
 
-            val data = HashMap<String, String>()
-            //UID
-            data["uid"] = FirebaseAuth.getInstance().currentUser!!.uid
+                favoriteRef.child("favorite").addListenerForSingleValueEvent(object : ValueEventListener {
+                    override fun onDataChange(snapshot: DataSnapshot) {// TODO firebaseのmFavoriteへの反映方法がわからないよ！！！
+                        mFavorite = (snapshot.value as String?).toString()
+                        Log.d("testA", mFavorite)
+                        if (mFavorite == null) {
+                            mFavorite = "false"
+                        }
 
-            var mFavorite: String
-            if (data["favorite"] == null) {
-                mFavorite = "true"
-            } else {
-                mFavorite = data["favorite"]!!
-            }
+                        if (mFavorite == "true") {
+                            favoriteButton.hide()//お気に入りボタン（済）を消しておく。
+                        } else {
+                            favoriteButton2.hide()//お気に入りボタン（済）を消しておく。
+                        }
 
-            if (mFavorite == "true") {
-                favoriteButton.hide()//お気に入りボタン（済）を消しておく。
-            } else {
-                favoriteButton2.hide()//お気に入りボタン（済）を消しておく。
-            }
+                        favoriteButton.setOnClickListener {
+                            //favoriteボタンが押されたら、登録をし、登録済みの画像へ変更する
+                            favoriteButton.hide()
+                            favoriteButton2.show()
+                            mFavorite = "true"
+                            favoriteRef.child("favorite").setValue(mFavorite)
+                        }
+                        favoriteButton2.setOnClickListener {
+                            //お気に入り済みのボタンを再度おしたら、お気に入りを解除し、登録未登録へ戻す。
+                            favoriteButton2.hide()
+                            favoriteButton.show()
+                            mFavorite = "false"
+                            favoriteRef.child("favorite").setValue(mFavorite)
+                        }
+                    }
 
-            if (user == null) {// もし、ログイン状態でなければ、お気に入りボタン（未）も隠す。
-                favoriteButton.hide()
-            }
-            favoriteButton.setOnClickListener {
-                //favoriteボタンが押されたら、登録をし、登録済みの画像へ変更する
-                favoriteButton.hide()
-                favoriteButton2.show()
-                mFavorite = "true"
-                favoriteRef.setValue(mFavorite)
-            }
-            favoriteButton2.setOnClickListener {
-                //お気に入り済みのボタンを再度おしたら、お気に入りを解除し、登録未登録へ戻す。
-                favoriteButton2.hide()
-                favoriteButton.show()
-                mFavorite = "false"
-                favoriteRef.setValue(mFavorite)
-            }
-        }else{
+                    override fun onCancelled(p0: DatabaseError) {}
+                })
+
+
+        } else {
             favoriteButton.hide()
             favoriteButton2.hide()
         }
+
+
+
+
 //ここまで =======================================================================================================================
 
         fab.setOnClickListener {
@@ -151,4 +159,14 @@ class QuestionDetailActivity : AppCompatActivity(),DatabaseReference.CompletionL
                 .show()
         }
     }
+//TODO ここも！！
+        /**
+         *  Preferenceにお気に入りを登録
+         */
+        fun saveFavorite(favorite:String){
+            val sp = PreferenceManager.getDefaultSharedPreferences(this)
+            val editor = sp.edit()
+            editor.putString(FavoritesPath,favorite)
+            editor.commit()
+        }
 }
