@@ -12,6 +12,7 @@ import android.support.v7.app.AppCompatActivity
 import com.google.firebase.auth.FirebaseUser
 import android.support.v7.widget.Toolbar
 import android.util.Base64
+import android.util.Log
 import android.view.Menu
 import android.view.MenuItem
 import android.view.View
@@ -216,8 +217,8 @@ class MainActivity : AppCompatActivity(),NavigationView.OnNavigationItemSelected
                 mGenre = 4
             }
             R.id.nav_favorite ->{
-                mToolbar.title="お気に入り"
-                mGenre = 5
+                val intent = Intent(applicationContext,FavoriteActivity::class.java)
+                startActivity(intent)
             }
         }
 
