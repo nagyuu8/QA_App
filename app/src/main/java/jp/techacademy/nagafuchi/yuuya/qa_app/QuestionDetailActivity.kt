@@ -13,6 +13,7 @@ import com.google.firebase.database.*
 import kotlinx.android.synthetic.main.activity_question_detail.*
 
 class QuestionDetailActivity : AppCompatActivity(),DatabaseReference.CompletionListener {
+    var  favoriteFlag = false
     private lateinit var mQuestion: Question
     private lateinit var mAdapter: QuestionDetailListAdapter
     private lateinit var mAnswerRef: DatabaseReference
@@ -57,30 +58,15 @@ class QuestionDetailActivity : AppCompatActivity(),DatabaseReference.CompletionL
     private val mFavoriteEventListener = object : ChildEventListener {
         override fun onChildAdded(p0: DataSnapshot, p1: String?) {//呼ばれる　== 子要素あり == お気に入り済み
             favoriteButton.setImageResource(R.drawable.ic_star_black_24dp)
+            favoriteFlag = true
 //            val map = p0.value as Map<String, String>
   //          val mGenre = map["genre"]
-            favoriteButton.setOnClickListener {
-                favoriteButton.setImageResource(R.drawable.ic_star_border_black_24dp)
-                mFavoriteRef.removeValue()
-            }
-
         }
 
-        override fun onChildChanged(p0: DataSnapshot, p1: String?) {
-            TODO("not implemented") //To change body of created functions use File | Settings | File Templates.
-        }
-
-        override fun onChildRemoved(p0: DataSnapshot) {
-            TODO("not implemented") //To change body of created functions use File | Settings | File Templates.
-        }
-
-        override fun onChildMoved(p0: DataSnapshot, p1: String?) {
-            TODO("not implemented") //To change body of created functions use File | Settings | File Templates.
-        }
-
-        override fun onCancelled(p0: DatabaseError) {
-            TODO("not implemented") //To change body of created functions use File | Settings | File Templates.
-        }
+        override fun onChildChanged(p0: DataSnapshot, p1: String?) {}
+        override fun onChildRemoved(p0: DataSnapshot) {}
+        override fun onChildMoved(p0: DataSnapshot, p1: String?) {}
+        override fun onCancelled(p0: DatabaseError) {}
 
     }
     //=================--新規変更ここまで======================================================
@@ -119,10 +105,17 @@ class QuestionDetailActivity : AppCompatActivity(),DatabaseReference.CompletionL
             }
         }
         favoriteButton.setOnClickListener {
-            val data = HashMap<String,String>()
-            data["genre"] = mQuestion.genre.toString()
-            mFavoriteRef.setValue(data)
-            favoriteButton.setImageResource(R.drawable.ic_star_black_24dp)
+            if(favoriteFlag){
+                favoriteButton.setImageResource(R.drawable.ic_star_border_black_24dp)
+                mFavoriteRef.removeValue()
+                favoriteFlag = false
+            }else{
+                val data = HashMap<String,String>()
+                data["genre"] = mQuestion.genre.toString()
+                mFavoriteRef.setValue(data)
+                favoriteButton.setImageResource(R.drawable.ic_star_black_24dp)
+            }
+
         }
 
         mAnswerRef = dataBaseReference.child(ContentsPATH).child(mQuestion.genre.toString()).child(mQuestion.questionUid).child(
