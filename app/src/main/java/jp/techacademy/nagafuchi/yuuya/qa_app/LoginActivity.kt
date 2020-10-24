@@ -60,6 +60,7 @@ class LoginActivity : AppCompatActivity() {
                 val user = mAuth.currentUser
                 val userRef = mDataBaseReference.child(UsersPATH).child(user!!.uid)
 
+
                 if (mIsCreateAccount){
                     //アカウント作成の時は表示名をFirebaseに保存する。
                     val name = nameText.text.toString()
